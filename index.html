@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Jay Godara</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    html {
+      background: #00112D;
+    }
+
+    body {
+      opacity: 0;
+
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+      color: #F7F5EF;
+
+      background-color: #00112D;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      position: relative;
+      overflow: hidden;
+
+      transition: opacity 0.15s ease;
+    }
+
+    /*
+      Soft moving light while the sky photograph loads.
+    */
+
+    body:not(.loaded)::before {
+      content: "";
+
+      position: absolute;
+      inset: -35%;
+
+      background:
+        radial-gradient(
+          ellipse at 25% 35%,
+          rgba(255, 255, 255, 0.20),
+          transparent 42%
+        ),
+        radial-gradient(
+          ellipse at 70% 65%,
+          rgba(255, 255, 255, 0.10),
+          transparent 45%
+        );
+
+      animation: skyLoader 9s ease-in-out infinite alternate;
+    }
+
+    @keyframes skyLoader {
+      0% {
+        transform: translate3d(-3%, -1%, 0) scale(1);
+      }
+
+      100% {
+        transform: translate3d(3%, 2%, 0) scale(1.06);
+      }
+    }
+
+    body.loaded {
+      opacity: 1;
+    }
+
+    main {
+      position: relative;
+      z-index: 1;
+
+      width: min(90%, 850px);
+      text-align: center;
+
+      text-shadow: 0 2px 16px rgba(0, 0, 0, 0.25);
+    }
+
+    .tagline {
+      margin: 0 auto;
+
+      max-width: 680px;
+
+      font-size: clamp(28px, 3.4vw, 38px);
+      line-height: 1.35;
+      font-weight: 400;
+      letter-spacing: -0.4px;
+    }
+
+    .curious {
+      display: block;
+
+      margin-top: 32px;
+
+      font-size: 19px;
+      line-height: 1.4;
+      font-weight: 400;
+      font-style: italic;
+      letter-spacing: 0.3px;
+
+      opacity: 0.9;
+    }
+
+    @media (max-width: 600px) {
+      main {
+        width: min(88%, 600px);
+      }
+
+      .tagline {
+        font-size: 27px;
+        line-height: 1.4;
+      }
+
+      .curious {
+        margin-top: 26px;
+        font-size: 19px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main>
+    <p class="tagline">
+      There’s always something interesting hiding behind a seemingly simple question.
+    </p>
+
+    <span class="curious">
+      Be curious.
+    </span>
+  </main>
+
+  <script>
+    /*
+      Choose the sky and matching loader color
+      based on the visitor's local time.
+
+      05:00–06:59 → Dawn
+      07:00–16:59 → Day
+      17:00–19:59 → Evening
+      20:00–04:59 → Night
+    */
+
+    const hour = new Date().getHours();
+
+    let sky;
+    let loaderColor;
+
+    if (hour >= 5 && hour < 7) {
+      sky = "images/dawn-sky.png";
+      loaderColor = "#5D80BA";
+    } else if (hour >= 7 && hour < 17) {
+      sky = "images/day-sky.png";
+      loaderColor = "#0470CA";
+    } else if (hour >= 17 && hour < 20) {
+      sky = "images/evening-sky.png";
+      loaderColor = "#28497E";
+    } else {
+      sky = "images/night-sky.png";
+      loaderColor = "#00112D";
+    }
+
+    /*
+      Set the correct loader color immediately,
+      before the photograph starts loading.
+    */
+
+    document.documentElement.style.backgroundColor = loaderColor;
+    document.body.style.backgroundColor = loaderColor;
+
+    /*
+      Load the actual sky photograph first.
+      The page becomes visible only after it is ready.
+    */
+
+    const image = new Image();
+
+    image.onload = function () {
+      document.body.style.backgroundImage = `url("${sky}")`;
+      document.body.classList.add("loaded");
+    };
+
+    image.onerror = function () {
+      document.body.classList.add("loaded");
+    };
+
+    image.src = sky;
+  </script>
+
+</body>
+</html>
